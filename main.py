@@ -63,7 +63,7 @@ def mutate_request(request: dict = Body(...)) -> dict:
         }
 
     message = (
-        f'Applying annotation for {object_in["kind"]}/{object_in["metadata"]["name"]} '
+        f'Applying annotation for {object_in["kind"]}/{k8s_app} '
         f'in ns {object_in["metadata"].get("namespace", "default")}.'
     )
     webhook.info(message)
