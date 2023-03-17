@@ -77,12 +77,12 @@ def mutate_request(request: dict = Body(...)) -> dict:
             "patchType": "JSONPatch",
             "status": {"message": message},
             "patch": base64.b64encode(
-                patch(
+                json.dumps(patch(
                     object_in=object_in,
                     stack=stack,
                     environment=environment,
                     k8s_app=k8s_app,
-                )
+                )).encode("UTF-8")
             ),
         },
     }
