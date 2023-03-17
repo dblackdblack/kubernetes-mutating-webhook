@@ -3,7 +3,7 @@ from pprint import pformat as pf
 import logging
 import os
 
-from fastapi import Body, FastAPI
+from fastapi import Body, FastAPI, HTTPException
 
 app = FastAPI()
 
@@ -35,10 +35,13 @@ def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[d
 @app.post("/mutate")
 def mutate_request(request: dict = Body(...)) -> dict:
     logging.info(pf(request))
+    raise HTTPException(status_code=403)
     uid = request["request"]["uid"]
     object_in = request["request"]["object"]
     stack = os.environ["STACK"]
     environment = os.environ["ENVIRONMENT"]
+    logging.info(pf(request))
+
     try:
         k8s_app = request["metadata"]["labels"]["app.kubernetes.io/name"]
     except KeyError:
