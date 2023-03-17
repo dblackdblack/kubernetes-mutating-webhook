@@ -20,15 +20,13 @@ logging.basicConfig(format="[%(asctime)s] %(levelname)s: %(message)s")
 
 def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[dict]:
     annot = "sumologic.com~1sourceCategory"
-    # annot = "foo"
     value = f"{environment}/{k8s_app}/{k8s_app}-{stack}/{k8s_app}"
     if object_in["metadata"].get("annotations", {}).get(annot):
         return []
-    else:
-        op = "add"
+
     return [
         {
-            "op": op,
+            "op": "add",
             "path": f"/metadata/annotations/{annot}",
             "value": value,
         }
