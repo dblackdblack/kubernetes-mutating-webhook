@@ -29,7 +29,7 @@ def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[d
     return [
         {
             "op": op,
-            "path": f"/metadata/annotations/\"{annot}\"",
+            "path": f"/metadata/annotations/{annot}",
             "value": value,
         }
     ]
