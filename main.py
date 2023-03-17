@@ -34,7 +34,7 @@ def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[d
 
 @app.post("/mutate")
 def mutate_request(request: dict = Body(...)) -> dict:
-    logging.info(pf(request))
+    uvicorn_logger.info(pf(request))
     raise HTTPException(status_code=403)
     uid = request["request"]["uid"]
     object_in = request["request"]["object"]
