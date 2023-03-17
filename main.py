@@ -40,7 +40,7 @@ def mutate_request(request: dict = Body(...)) -> dict:
     object_in = request["request"]["object"]
     stack = os.environ["STACK"]
     environment = os.environ["ENVIRONMENT"]
-    logging.info(pf(request))
+    uvicorn_logger.info(pf(request))
 
     try:
         k8s_app = request["metadata"]["labels"]["app.kubernetes.io/name"]
