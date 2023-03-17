@@ -38,8 +38,7 @@ def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[d
 def mutate_request(request: dict = Body(...)) -> dict:
     with open("/tmp/req", encoding="UTF-8", mode="w") as fp:
         print(json.dumps(request), file=fp)
-    print(pf(request), file=sys.stderr)
-    raise HTTPException(status_code=403)
+
     uid = request["request"]["uid"]
     object_in = request["request"]["object"]
     stack = os.environ["STACK"]
@@ -47,7 +46,7 @@ def mutate_request(request: dict = Body(...)) -> dict:
     uvicorn_logger.info(pf(request))
 
     try:
-        k8s_app = request["metadata"]["labels"]["app.kubernetes.io/name"]
+        k8s_app = object_in["metadata"]["labels"]["app.kubernetes.io/name"]
     except KeyError:
         message = (
             f"Unable to retrieve label `app.kubernetes.io/name` from pod {object_in['metadata']['name']} in "
