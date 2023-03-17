@@ -3,6 +3,7 @@ from pprint import pformat as pf
 import logging
 import os
 import sys
+import json
 
 from fastapi import Body, FastAPI, HTTPException
 
@@ -35,6 +36,8 @@ def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[d
 
 @app.post("/mutate")
 def mutate_request(request: dict = Body(...)) -> dict:
+    with open("/tmp/req", encoding="UTF-8") as fp:
+        print(json.dumps(request), file=fp)
     print(pf(request), file=sys.stderr)
     raise HTTPException(status_code=403)
     uid = request["request"]["uid"]
