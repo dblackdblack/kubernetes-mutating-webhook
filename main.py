@@ -2,6 +2,7 @@ import base64
 from pprint import pformat as pf
 import logging
 import os
+import sys
 
 from fastapi import Body, FastAPI, HTTPException
 
@@ -34,7 +35,7 @@ def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[d
 
 @app.post("/mutate")
 def mutate_request(request: dict = Body(...)) -> dict:
-    uvicorn_logger.info(pf(request))
+    print(pf(request), file=sys.stderr)
     raise HTTPException(status_code=403)
     uid = request["request"]["uid"]
     object_in = request["request"]["object"]
