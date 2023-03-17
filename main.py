@@ -23,7 +23,7 @@ def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[d
     # annot = "foo"
     value = f"{environment}/{k8s_app}/{k8s_app}-{stack}/{k8s_app}"
     if object_in["metadata"].get("annotations", {}).get(annot):
-        op = "patch"
+        return []
     else:
         op = "add"
     return [
