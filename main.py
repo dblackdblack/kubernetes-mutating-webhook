@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import base64
 import logging
 import os
@@ -7,7 +9,13 @@ from fastapi import Body, FastAPI
 
 # heavily cribbed from https://github.com/k-mitevski/kubernetes-mutating-webhook
 
-app = FastAPI()
+"""
+A kubernetes mutating webhook FastAPI http service that receives webhooks from the kubernetes API server whenever a new
+pod is created. It adds the pod annotation `sumologic.com/sourceCategory` to all new pods matching our source category
+pattern so that logs get sent to the right location in sumologic 
+"""
+
+fastapi_app = FastAPI()
 
 logger = logging.getLogger(__name__)
 uvicorn_logger = logging.getLogger("uvicorn")
@@ -21,22 +29,7 @@ _stack = os.environ["STACK"]
 _environment = os.environ["ENVIRONMENT"]
 
 
-def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[dict]:
-    annot = "sumologic.com~1sourceCategory"  # you represent an in-line '/' as '~1' in json patch
-    value = f"{environment}/{k8s_app}/{k8s_app}-{stack}/{k8s_app}"
-    if object_in["metadata"].get("annotations", {}).get(annot):
-        return []
-
-    return [
-        {
-            "op": "add",
-            "path": f"/metadata/annotations/{annot}",
-            "value": value,
-        }
-    ]
-
-
-@app.post("/mutate")
+@fastapi_app.post("/mutate")
 def mutate_request(
     request: dict = Body(...),
 ) -> dict:
@@ -90,6 +83,23 @@ def mutate_request(
     }
 
 
-@app.get("/healthz")
+@fastapi_app.get("/healthz")
 def healthcheck() -> dict:
     return {"status": "OK"}
+
+
+def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[dict]:
+    annot = "sumologic.com~1sourceCategory"  # you represent an in-line '/' as '~1' in json patch
+    value = f"{environment}/{k8s_app}/{k8s_app}-{stack}/{k8s_app}"
+    if object_in["metadata"].get("annotations", {}).get(annot):
+        return []
+
+    return [
+        {
+            "op": "add",
+            "path": f"/metadata/annotations/{annot}",
+            "value": value,
+        }
+    ]
+
+
