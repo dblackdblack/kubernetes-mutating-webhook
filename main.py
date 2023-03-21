@@ -42,7 +42,7 @@ def mutate_request(
     environment: str = os.environ["ENVIRONMENT"],
 ) -> dict:
     uid = request["request"]["uid"]
-    object_in = request["request"]["object"]
+    object_in = request["request"]
     with open("/tmp/obj", mode="w", encoding="UTF-8") as fp:
         fp.write(json.dumps(object_in))
 
