@@ -42,13 +42,13 @@ def mutate_request(
     environment: str = os.environ["ENVIRONMENT"],
 ) -> dict:
     uid = request["request"]["uid"]
-    object_in = request["request"]
+    object_in = request["request"]["object"]
     with open("/tmp/obj", mode="w", encoding="UTF-8") as fp:
         fp.write(json.dumps(object_in))
 
     logger.warning(f"object_in:{pf(object_in)}")
     try:
-        k8s_app = object_in["metadata"]["labels"]["app.kubernetes.io/name"]
+        k8s_app = object_in["generate_name"][:-1]  # trim trailing '-'
         logger.warning(f"k8s_app:{k8s_app}")
     except KeyError:
         message = (
