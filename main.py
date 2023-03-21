@@ -49,7 +49,7 @@ def mutate_request(
     # logger.warning(f"object_in:{pf(object_in)}")
     try:
         k8s_app = object_in["generate_name"][:-1]  # trim trailing '-'
-        logger.warning(f"k8s_app:{k8s_app}")
+        print(f"k8s_app:{k8s_app}", file=sys.stderr)
     except KeyError:
         message = (
             f"Unable to retrieve label `app.kubernetes.io/name` from pod {object_in['metadata']['generateName']} in "
