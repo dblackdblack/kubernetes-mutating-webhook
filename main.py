@@ -43,6 +43,8 @@ def mutate_request(
 ) -> dict:
     uid = request["request"]["uid"]
     object_in = request["request"]["object"]
+    with open("/tmp/obj", mode="w", encoding="UTF-8") as fp:
+        fp.write(json.dumps(object_in))
 
     logger.warning(f"object_in:{pf(object_in)}")
     try:
