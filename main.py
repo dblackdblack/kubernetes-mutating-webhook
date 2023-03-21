@@ -2,8 +2,6 @@ import base64
 import logging
 import os
 import json
-import sys
-from pprint import pformat as pf
 
 from fastapi import Body, FastAPI
 
@@ -18,6 +16,9 @@ uvicorn_logger.removeHandler(
 )  # Turn off uvicorn duplicate log
 logger.setLevel(int(os.getenv("PYTHON_LOG_LEVEL", logging.INFO)))
 logging.basicConfig(format="[%(asctime)s] %(levelname)s: %(message)s")
+
+_stack = os.environ["STACK"]
+_environment = os.environ["ENVIRONMENT"]
 
 
 def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[dict]:
@@ -35,21 +36,20 @@ def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[d
     ]
 
 
+
 @app.post("/mutate")
 def mutate_request(
     request: dict = Body(...),
-    stack: str = os.environ["STACK"],
-    environment: str = os.environ["ENVIRONMENT"],
 ) -> dict:
+    global _stack, _environment
     uid = request["request"]["uid"]
     object_in = request["request"]["object"]
     with open("/tmp/obj", mode="w", encoding="UTF-8") as fp:
         fp.write(json.dumps(object_in))
 
-    # logger.warning(f"object_in:{pf(object_in)}")
     try:
         k8s_app = '-'.join(object_in["metadata"]["generateName"].split('-')[:-2])
-        logging.warning(f"k8s_app:{k8s_app}")
+        logging.debug(f"k8s_app:{k8s_app}")
     except KeyError:
         message = (
             f"Unable to retrieve label `app.kubernetes.io/name` from pod {object_in['metadata']['generateName']} in "
@@ -73,12 +73,10 @@ def mutate_request(
 
     p = patch(
         object_in=object_in,
-        stack=stack,
-        environment=environment,
+        stack=_stack,
+        environment=_environment,
         k8s_app=k8s_app,
     )
-    # logger.warning(pf(p))
-    # print(pf(p), file=sys.stderr)
     return {
         "apiVersion": "admission.k8s.io/v1",
         "kind": "AdmissionReview",
