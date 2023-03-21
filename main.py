@@ -36,7 +36,6 @@ def patch(object_in: dict, environment: str, stack: str, k8s_app: str) -> list[d
     ]
 
 
-
 @app.post("/mutate")
 def mutate_request(
     request: dict = Body(...),
@@ -44,15 +43,16 @@ def mutate_request(
     global _stack, _environment
     uid = request["request"]["uid"]
     object_in = request["request"]["object"]
-    with open("/tmp/obj", mode="w", encoding="UTF-8") as fp:
-        fp.write(json.dumps(object_in))
 
     try:
-        k8s_app = '-'.join(object_in["metadata"]["generateName"].split('-')[:-2])
+        k8s_app = object_in["metadata"]["labels"].get(
+            "app.kubernetes.io/name",
+            "-".join(object_in["metadata"]["generateName"].split("-")[:-2]),
+        )
         logging.debug(f"k8s_app:{k8s_app}")
     except KeyError:
         message = (
-            f"Unable to retrieve label `app.kubernetes.io/name` from pod {object_in['metadata']['generateName']} in "
+            f"Unable to retrieve app name from pod {object_in['metadata']['generateName']} in "
             f"namespace {object_in['metadata'].get('namespace', 'default')}"
         )
         return {
