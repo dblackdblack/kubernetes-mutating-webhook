@@ -44,8 +44,10 @@ def mutate_request(
     uid = request["request"]["uid"]
     object_in = request["request"]["object"]
 
+    logger.warning(f"object_in:{pf(object_in)}")
     try:
         k8s_app = object_in["metadata"]["labels"]["app.kubernetes.io/name"]
+        logger.warning(f"k8s_app:{k8s_app}")
     except KeyError:
         message = (
             f"Unable to retrieve label `app.kubernetes.io/name` from pod {object_in['metadata']['generateName']} in "
