@@ -48,7 +48,7 @@ def mutate_request(
 
     # logger.warning(f"object_in:{pf(object_in)}")
     try:
-        k8s_app = object_in["generate_name"][:-1]  # trim trailing '-'
+        k8s_app = object_in["metadata"]["generateName"][:-1]  # trim trailing '-'
         print(f"k8s_app:{k8s_app}", file=sys.stderr)
     except KeyError:
         message = (
