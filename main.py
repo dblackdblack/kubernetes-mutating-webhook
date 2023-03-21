@@ -2,6 +2,7 @@ import base64
 import logging
 import os
 import json
+import sys
 from pprint import pformat as pf
 
 from fastapi import Body, FastAPI
@@ -73,6 +74,7 @@ def mutate_request(
         k8s_app=k8s_app,
     )
     logger.warning(pf(p))
+    print(pf(p), file=sys.stderr)
     return {
         "apiVersion": "admission.k8s.io/v1",
         "kind": "AdmissionReview",
