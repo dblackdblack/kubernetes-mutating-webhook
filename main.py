@@ -46,7 +46,7 @@ def mutate_request(
     with open("/tmp/obj", mode="w", encoding="UTF-8") as fp:
         fp.write(json.dumps(object_in))
 
-    logger.warning(f"object_in:{pf(object_in)}")
+    # logger.warning(f"object_in:{pf(object_in)}")
     try:
         k8s_app = object_in["generate_name"][:-1]  # trim trailing '-'
         logger.warning(f"k8s_app:{k8s_app}")
@@ -77,8 +77,8 @@ def mutate_request(
         environment=environment,
         k8s_app=k8s_app,
     )
-    logger.warning(pf(p))
-    print(pf(p), file=sys.stderr)
+    # logger.warning(pf(p))
+    # print(pf(p), file=sys.stderr)
     return {
         "apiVersion": "admission.k8s.io/v1",
         "kind": "AdmissionReview",
