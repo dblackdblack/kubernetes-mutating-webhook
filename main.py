@@ -2,6 +2,7 @@ import base64
 import logging
 import os
 import json
+from pprint import pformat as pf
 
 from fastapi import Body, FastAPI
 
@@ -65,6 +66,13 @@ def mutate_request(
     )
     logger.info(message)
 
+    p = patch(
+        object_in=object_in,
+        stack=stack,
+        environment=environment,
+        k8s_app=k8s_app,
+    )
+    logger.warning(pf(p))
     return {
         "apiVersion": "admission.k8s.io/v1",
         "kind": "AdmissionReview",
@@ -73,16 +81,7 @@ def mutate_request(
             "allowed": True,
             "patchType": "JSONPatch",
             "status": {"message": message},
-            "patch": base64.b64encode(
-                json.dumps(
-                    patch(
-                        object_in=object_in,
-                        stack=stack,
-                        environment=environment,
-                        k8s_app=k8s_app,
-                    )
-                ).encode("UTF-8")
-            ),
+            "patch": base64.b64encode(json.dumps(p).encode("UTF-8")),
         },
     }
 
